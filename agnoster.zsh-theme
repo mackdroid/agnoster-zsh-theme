@@ -1,5 +1,4 @@
 # vim:ft=zsh ts=2 sw=2 sts=2
-#
 # agnoster's Theme - https://gist.github.com/3712874
 # A Powerline-inspired theme for ZSH
 #
@@ -10,7 +9,7 @@
 #
 # In addition, I recommend the
 # [Solarized theme](https://github.com/altercation/solarized/) and, if you're
-# using it on Mac OS X, [iTerm 2](http://www.iterm2.com/) over Terminal.app -
+# using it on Mcaac OS X, [iTerm 2](http://www.iterm2.com/) over Terminal.app -
 # it has significantly better color fidelity.
 #
 # # Goals
@@ -26,7 +25,8 @@
 
 typeset -aHg AGNOSTER_PROMPT_SEGMENTS=(
     prompt_status
-    prompt_context
+    prompt_user
+    prompt_host
     prompt_virtualenv
     prompt_dir
     prompt_git
@@ -80,20 +80,24 @@ prompt_end() {
 ### Prompt components
 # Each component will draw itself, and hide itself if no information needs to be shown
 
-# Context: user@hostname (who am I and where am I)
-prompt_context() {
+# user: "user" (who am I)
+prompt_user() {
   local user=`whoami`
 
   if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
-    prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$user@%m "
+    prompt_segment $Seg1 $Segf1 " %(!.%{%F{yellow}%}.)$user "
   fi
+}
+# host: "host" (where am I)
+prompt_host() {
+    prompt_segment $Seg2 $Segf2 " %(!.%{%F{yellow}%}.)%m "
 }
 
 # Git: branch/detached head, dirty status
 prompt_git() {
   local color ref
   is_dirty() {
-    test -n "$(git status --porcelain --ignore-submodules)"
+    test -n "$(git status --porcelain --ignore-submodules 2>/dev/null)"
   }
   ref="$vcs_info_msg_0_"
   if [[ -n "$ref" ]]; then
@@ -116,7 +120,7 @@ prompt_git() {
 
 # Dir: current working directory
 prompt_dir() {
-  prompt_segment blue $PRIMARY_FG ' %~ '
+  prompt_segment $Seg3 $Segf3 ' %~ '
 }
 
 # Status:
@@ -130,7 +134,7 @@ prompt_status() {
   [[ $UID -eq 0 ]] && symbols+="%{%F{yellow}%}$LIGHTNING"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="%{%F{cyan}%}$GEAR"
 
-  [[ -n "$symbols" ]] && prompt_segment $PRIMARY_FG default " $symbols "
+  [[ -n "$symbols" ]] && prompt_segment $Seg1 $Segf1 " $symbols "
 }
 
 # Display current virtual environment
